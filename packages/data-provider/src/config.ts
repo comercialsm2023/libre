@@ -2078,6 +2078,10 @@ export enum SettingsTabValues {
    * Tab for Personalization Settings
    */
   PERSONALIZATION = 'personalization',
+  /**
+   * Tab for Vault (Cofre) Settings
+   */
+  VAULT = 'vault',
 }
 
 export enum STTProviders {

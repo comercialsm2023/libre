@@ -724,6 +724,15 @@ export type TSkillNode = {
   updatedAt: string;
 };
 
+export type TVaultKey = {
+  name: string;
+  expiresAt?: string;
+};
+
+export type TUpdateVaultKeyRequest = {
+  value: string;
+};
+
 export type TSkillTreeResponse = {
   nodes: TSkillNode[];
 };

@@ -101,6 +101,10 @@ export const apiKeys = () => apiKeysEndpoint;
 
 export const apiKeyById = (id: string) => `${apiKeysEndpoint}/${id}`;
 
+export const vault = () => `${BASE_URL}/api/vault`;
+
+export const vaultByName = (name: string) => `${BASE_URL}/api/vault/${name}`;
+
 export const conversationsRoot = `${BASE_URL}/api/convos`;
 
 export const conversations = (params: q.ConversationListParams) => {

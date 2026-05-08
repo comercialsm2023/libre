@@ -7,6 +7,7 @@ const {
   getGoogleModels,
 } = require('@librechat/api');
 const { getAppConfig } = require('./app');
+const { getUserKey } = require('~/models');
 
 /**
  * Loads the default models for the application.
@@ -20,18 +21,26 @@ async function loadDefaultModels(req) {
       req.config ?? (await getAppConfig({ role: req.user?.role, tenantId: req.user?.tenantId }));
     const vertexConfig = appConfig?.endpoints?.[EModelEndpoint.anthropic]?.vertexConfig;
 
+    const [openAIApiKey, anthropicApiKey, googleApiKey] = await Promise.all([
+      getUserKey({ userId: req.user.id, name: EModelEndpoint.openAI }).catch(() => null),
+      getUserKey({ userId: req.user.id, name: EModelEndpoint.anthropic }).catch(() => null),
+      getUserKey({ userId: req.user.id, name: EModelEndpoint.google }).catch(() => null),
+    ]);
+
     const [openAI, anthropic, azureOpenAI, assistants, azureAssistants, google, bedrock] =
       await Promise.all([
-        getOpenAIModels({ user: req.user.id }).catch((error) => {
+        getOpenAIModels({ user: req.user.id, openAIApiKey }).catch((error) => {
           logger.error('Error fetching OpenAI models:', error);
           return [];
         }),
-        getAnthropicModels({ user: req.user.id, vertexModels: vertexConfig?.modelNames }).catch(
-          (error) => {
-            logger.error('Error fetching Anthropic models:', error);
-            return [];
-          },
-        ),
+        getAnthropicModels({
+          user: req.user.id,
+          anthropicApiKey,
+          vertexModels: vertexConfig?.modelNames,
+        }).catch((error) => {
+          logger.error('Error fetching Anthropic models:', error);
+          return [];
+        }),
         getOpenAIModels({ user: req.user.id, azure: true }).catch((error) => {
           logger.error('Error fetching Azure OpenAI models:', error);
           return [];
@@ -44,7 +53,7 @@ async function loadDefaultModels(req) {
           logger.error('Error fetching Azure OpenAI Assistants API models:', error);
           return [];
         }),
-        Promise.resolve(getGoogleModels()).catch((error) => {
+        getGoogleModels(googleApiKey).catch((error) => {
           logger.error('Error getting Google models:', error);
           return [];
         }),

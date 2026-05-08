@@ -30,6 +30,7 @@ const share = require('./share');
 const tags = require('./tags');
 const auth = require('./auth');
 const keys = require('./keys');
+const vault = require('./vault');
 const user = require('./user');
 const mcp = require('./mcp');
 
@@ -43,6 +44,7 @@ module.exports = {
   adminRoles,
   adminUsers,
   keys,
+  vault,
   apiKeys,
   user,
   tags,

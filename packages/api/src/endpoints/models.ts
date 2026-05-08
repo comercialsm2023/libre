@@ -324,11 +324,11 @@ export async function getOpenAIModels(opts: GetOpenAIModelsOptions = {}): Promis
  * @returns Promise resolving to array of model IDs
  */
 export async function fetchAnthropicModels(
-  opts: { user?: string; skipCache?: boolean } = {},
+  opts: { user?: string; skipCache?: boolean; anthropicApiKey?: string } = {},
   _models: string[] = [],
 ): Promise<string[]> {
   let models = _models.slice() ?? [];
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = opts.anthropicApiKey ?? process.env.ANTHROPIC_API_KEY;
   const anthropicBaseURL = 'https://api.anthropic.com/v1';
   let baseURL = anthropicBaseURL;
   const reverseProxyUrl = process.env.ANTHROPIC_REVERSE_PROXY;
@@ -365,7 +365,7 @@ export async function fetchAnthropicModels(
  * @returns Promise resolving to array of model IDs
  */
 export async function getAnthropicModels(
-  opts: { user?: string; vertexModels?: string[] } = {},
+  opts: { user?: string; vertexModels?: string[]; anthropicApiKey?: string } = {},
 ): Promise<string[]> {
   const models = defaultModels[EModelEndpoint.anthropic];
 
@@ -378,7 +378,7 @@ export async function getAnthropicModels(
     return splitAndTrim(process.env.ANTHROPIC_MODELS);
   }
 
-  if (isUserProvided(process.env.ANTHROPIC_API_KEY)) {
+  if (isUserProvided(process.env.ANTHROPIC_API_KEY) && !opts.anthropicApiKey) {
     return models;
   }
 
@@ -394,11 +394,30 @@ export async function getAnthropicModels(
  * Gets Google models from environment or defaults.
  * @returns Array of model IDs
  */
-export function getGoogleModels(): string[] {
+export async function getGoogleModels(apiKey?: string): Promise<string[]> {
   let models = defaultModels[EModelEndpoint.google];
   if (process.env.GOOGLE_MODELS) {
     models = splitAndTrim(process.env.GOOGLE_MODELS);
+    return models;
   }
+
+  const key = apiKey ?? process.env.GOOGLE_KEY;
+  if (key && key !== 'user_provided') {
+    try {
+      const response = await axios.get(
+        `https://generativelanguage.googleapis.com/v1beta/models?key=${key}`,
+      );
+      const apiModels = response.data.models
+        .filter((m: any) => m.supportedGenerationMethods.includes('generateContent'))
+        .map((m: any) => m.name.replace('models/', ''));
+      if (apiModels.length > 0) {
+        return apiModels;
+      }
+    } catch (error) {
+      // logger.error('Error fetching Google models:', error);
+    }
+  }
+
   return models;
 }
 

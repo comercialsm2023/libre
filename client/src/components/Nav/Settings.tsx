@@ -21,6 +21,7 @@ import {
   Data,
   Balance,
   Account,
+  Vault,
 } from './SettingsTabs';
 import usePersonalizationAccess from '~/hooks/usePersonalizationAccess';
 import { useLocalize, TranslationKeys } from '~/hooks';
@@ -106,6 +107,11 @@ export default function Settings({ open, onOpenChange }: TDialogProps) {
       value: SettingsTabValues.DATA,
       icon: <DataIcon />,
       label: 'com_nav_setting_data',
+    },
+    {
+      value: SettingsTabValues.VAULT,
+      icon: <MessageSquare className="icon-sm" aria-hidden="true" />, // I'll use a placeholder icon for now
+      label: 'com_nav_setting_vault' as TranslationKeys,
     },
     ...(startupConfig?.balance?.enabled
       ? [
@@ -242,6 +248,9 @@ export default function Settings({ open, onOpenChange }: TDialogProps) {
                     )}
                     <Tabs.Content value={SettingsTabValues.DATA} tabIndex={-1}>
                       <Data />
+                    </Tabs.Content>
+                    <Tabs.Content value={SettingsTabValues.VAULT} tabIndex={-1}>
+                      <Vault />
                     </Tabs.Content>
                     {startupConfig?.balance?.enabled && (
                       <Tabs.Content value={SettingsTabValues.BALANCE} tabIndex={-1}>

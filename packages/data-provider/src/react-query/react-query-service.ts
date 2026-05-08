@@ -567,3 +567,41 @@ export const useDeleteAgentApiKeyMutation = (): UseMutationResult<void, unknown,
     },
   });
 };
+
+/* Vault */
+
+export const useGetVaultKeysQuery = (
+  config?: UseQueryOptions<t.TVaultKey[]>,
+): QueryObserverResult<t.TVaultKey[]> => {
+  return useQuery<t.TVaultKey[]>([QueryKeys.vaultKeys], () => dataService.getVaultKeys(), {
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+    ...config,
+  });
+};
+
+export const useUpdateVaultKeyMutation = (): UseMutationResult<
+  { name: string },
+  unknown,
+  t.TUpdateVaultKeyRequest
+> => {
+  const queryClient = useQueryClient();
+  return useMutation((payload: t.TUpdateVaultKeyRequest) => dataService.updateVaultKey(payload), {
+    onSuccess: () => {
+      queryClient.invalidateQueries([QueryKeys.vaultKeys]);
+      queryClient.invalidateQueries([QueryKeys.models]);
+    },
+  });
+};
+
+export const useDeleteVaultKeyMutation = (): UseMutationResult<void, unknown, string> => {
+  const queryClient = useQueryClient();
+  return useMutation((name: string) => dataService.deleteVaultKey(name), {
+    onSuccess: () => {
+      queryClient.invalidateQueries([QueryKeys.vaultKeys]);
+      queryClient.invalidateQueries([QueryKeys.models]);
+    },
+  });
+};
+

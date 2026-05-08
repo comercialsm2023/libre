@@ -1278,3 +1278,18 @@ export interface ActiveJobsResponse {
 export const getActiveJobs = (): Promise<ActiveJobsResponse> => {
   return request.get(endpoints.activeJobs());
 };
+
+/* Vault */
+
+export const getVaultKeys = (): Promise<t.TVaultKey[]> => {
+  return request.get(endpoints.vault());
+};
+
+export const updateVaultKey = (payload: t.TUpdateVaultKeyRequest): Promise<{ name: string }> => {
+  return request.post(endpoints.vault(), payload);
+};
+
+export const deleteVaultKey = (name: string): Promise<void> => {
+  return request.delete(endpoints.vaultByName(name));
+};
+
