@@ -21,8 +21,8 @@ import {
   Data,
   Balance,
   Account,
-  Vault,
 } from './SettingsTabs';
+import { maestroModules } from '~/store/MaestroRegistry';
 import usePersonalizationAccess from '~/hooks/usePersonalizationAccess';
 import { useLocalize, TranslationKeys } from '~/hooks';
 import { useGetStartupConfig } from '~/data-provider';
@@ -44,6 +44,7 @@ export default function Settings({ open, onOpenChange }: TDialogProps) {
       SettingsTabValues.SPEECH,
       ...(hasAnyPersonalizationFeature ? [SettingsTabValues.PERSONALIZATION] : []),
       SettingsTabValues.DATA,
+      ...maestroModules.map((m) => m.tabValue as SettingsTabValues),
       ...(startupConfig?.balance?.enabled ? [SettingsTabValues.BALANCE] : []),
       SettingsTabValues.ACCOUNT,
     ];
@@ -108,11 +109,11 @@ export default function Settings({ open, onOpenChange }: TDialogProps) {
       icon: <DataIcon />,
       label: 'com_nav_setting_data',
     },
-    {
-      value: SettingsTabValues.VAULT,
-      icon: <MessageSquare className="icon-sm" aria-hidden="true" />, // I'll use a placeholder icon for now
-      label: 'com_nav_setting_vault' as TranslationKeys,
-    },
+    ...maestroModules.map((m) => ({
+      value: m.tabValue as SettingsTabValues,
+      icon: <m.icon className="icon-sm" aria-hidden="true" />,
+      label: m.label as TranslationKeys,
+    })),
     ...(startupConfig?.balance?.enabled
       ? [
           {
@@ -249,9 +250,11 @@ export default function Settings({ open, onOpenChange }: TDialogProps) {
                     <Tabs.Content value={SettingsTabValues.DATA} tabIndex={-1}>
                       <Data />
                     </Tabs.Content>
-                    <Tabs.Content value={SettingsTabValues.VAULT} tabIndex={-1}>
-                      <Vault />
-                    </Tabs.Content>
+                    {maestroModules.map((m) => (
+                      <Tabs.Content key={m.name} value={m.tabValue as SettingsTabValues} tabIndex={-1}>
+                        <m.component />
+                      </Tabs.Content>
+                    ))}
                     {startupConfig?.balance?.enabled && (
                       <Tabs.Content value={SettingsTabValues.BALANCE} tabIndex={-1}>
                         <Balance />

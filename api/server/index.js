@@ -42,6 +42,7 @@ const staticCache = require('./utils/staticCache');
 const optionalJwtAuth = require('./middleware/optionalJwtAuth');
 const noIndex = require('./middleware/noIndex');
 const routes = require('./routes');
+const { loadMaestroModules } = require('./services/MaestroEngine');
 
 const { PORT, HOST, ALLOW_SOCIAL_LOGIN, DISABLE_COMPRESSION, TRUST_PROXY } = process.env ?? {};
 
@@ -173,8 +174,11 @@ const startServer = async () => {
   app.use('/api/admin/users', routes.adminUsers);
   app.use('/api/actions', routes.actions);
   app.use('/api/keys', routes.keys);
-  app.use('/api/vault', routes.vault);
   app.use('/api/api-keys', routes.apiKeys);
+
+  // Maestro Engine: Dynamic Module Loading
+  loadMaestroModules(app);
+
   app.use('/api/user', routes.user);
   app.use('/api/search', routes.search);
   app.use('/api/messages', routes.messages);

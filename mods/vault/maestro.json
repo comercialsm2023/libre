@@ -1,0 +1,15 @@
+{
+  "name": "vault",
+  "label": "Cofre",
+  "version": "1.0.0",
+  "type": "settings-tab",
+  "icon": "ShieldCheck",
+  "frontend": {
+    "component": "Vault.tsx",
+    "route": "vault"
+  },
+  "backend": {
+    "routes": "routes.js",
+    "mount": "/api/vault"
+  }
+}
