@@ -315,6 +315,7 @@ export default defineConfig(({ command }) => ({
   resolve: {
     alias: {
       '~': path.join(__dirname, 'src/'),
+      '@modules': path.resolve(__dirname, '../modules'),
       $fonts: path.resolve(__dirname, 'public/fonts'),
       'micromark-extension-math': 'micromark-extension-llm-math',
     },

@@ -1,5 +1,5 @@
 import { ShieldCheck, LucideIcon } from 'lucide-react';
-import Vault from '../../../mods/vault/frontend/Vault';
+import Vault from '@modules/vault/frontend/Vault';
 
 export type MaestroModule = {
   name: string;
